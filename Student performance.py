@@ -64,13 +64,30 @@ t = t.fit(d_train_att, d_train_pass)
 # In[6]:
 
 
-# visualize tree
-import graphviz
-dot_data = tree.export_graphviz(t, out_file=None, label="all", impurity=False, proportion=True,
-                                feature_names=list(d_train_att), class_names=["fail", "pass"], 
-                                filled=True, rounded=True)
-graph = graphviz.Source(dot_data)
-graph
+# visualize tree (needs Graphviz `dot` on PATH for graphviz package; else use matplotlib)
+import shutil
+import matplotlib.pyplot as plt
+
+_kw = dict(
+    label="all",
+    impurity=False,
+    proportion=True,
+    feature_names=list(d_train_att),
+    class_names=["fail", "pass"],
+    filled=True,
+    rounded=True,
+)
+
+if shutil.which("dot"):
+    import graphviz
+    dot_data = tree.export_graphviz(t, out_file=None, **_kw)
+    graph = graphviz.Source(dot_data)
+    graph
+else:
+    fig, ax = plt.subplots(figsize=(22, 12))
+    tree.plot_tree(t, ax=ax, **_kw)
+    plt.tight_layout()
+    plt.show()
 
 
 # In[7]:
